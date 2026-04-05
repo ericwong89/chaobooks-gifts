@@ -1,0 +1,66 @@
+[
+  {
+    "id": "001",
+    "title": {
+      "zh-cn": "可爱笔记本",
+      "zh-tw": "可愛筆記本"
+    },
+    "desc": {
+      "zh-cn": "官方限量设计，精致印刷，A5尺寸，80页米黄道林纸，送礼自用皆宜。",
+      "zh-tw": "官方限量設計，精緻印刷，A5尺寸，80頁米黃道林紙，送禮自用皆宜。"
+    },
+    "image": "/assets/images/notebook.jpg",
+    "emoji": "📔",
+    "link_taobao": "https://item.taobao.com/xxxx001",
+    "category": "文具",
+    "hot": true
+  },
+  {
+    "id": "002",
+    "title": {
+      "zh-cn": "限量马克杯",
+      "zh-tw": "限量馬克杯"
+    },
+    "desc": {
+      "zh-cn": "高品质陶瓷材质，独家联名图案，容量350ml，可微波炉使用。",
+      "zh-tw": "高品質陶瓷材質，獨家聯名圖案，容量350ml，可微波爐使用。"
+    },
+    "image": "/assets/images/mug.jpg",
+    "emoji": "☕",
+    "link_taobao": "https://item.taobao.com/xxxx002",
+    "category": "生活用品",
+    "hot": true
+  },
+  {
+    "id": "003",
+    "title": {
+      "zh-cn": "帆布手提袋",
+      "zh-tw": "帆布手提袋"
+    },
+    "desc": {
+      "zh-cn": "环保棉麻材质，大容量设计，印花图案清新，适合日常通勤。",
+      "zh-tw": "環保棉麻材質，大容量設計，印花圖案清新，適合日常通勤。"
+    },
+    "image": "/assets/images/bag.jpg",
+    "emoji": "👜",
+    "link_taobao": "https://item.taobao.com/xxxx003",
+    "category": "服饰",
+    "hot": false
+  },
+  {
+    "id": "004",
+    "title": {
+      "zh-cn": "印花贴纸套装",
+      "zh-tw": "印花貼紙套裝"
+    },
+    "desc": {
+      "zh-cn": "防水材质，20枚装，随机图案，适合手账、行李箱装饰。",
+      "zh-tw": "防水材質，20枚裝，隨機圖案，適合手帳、行李箱裝飾。"
+    },
+    "image": "/assets/images/stickers.jpg",
+    "emoji": "🏷️",
+    "link_taobao": "https://item.taobao.com/xxxx004",
+    "category": "文具",
+    "hot": false
+  }
+]
