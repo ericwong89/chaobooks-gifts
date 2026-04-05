@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分类</title>
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .cat-page { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
+    .cat-page-header { margin-bottom: 20px; }
+    .cat-page-header h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px; font-weight: 700; color: var(--ink);
+    }
+    .cat-page-header p { font-size: 13px; color: var(--ink3); margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="/index.html" class="logo">
+      <span class="logo-badge">赠</span>
+      <span class="logo-text" data-i18n="brand">赠品集</span>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="zh-cn">简体</button>
+      <button class="lang-btn" data-lang="zh-tw">繁體</button>
+    </div>
+  </header>
+
+  <div class="cat-page">
+    <div class="cat-page-header">
+      <h1 id="catHeading">分类</h1>
+      <p id="catCount"></p>
+    </div>
+    <div class="product-grid" id="catGrid"></div>
+  </div>
+
+  <script src="/assets/js/i18n.js"></script>
+  <script>
+    const DATA_URL = '/data/products.json';
+
+    // Read category from URL: /zh-cn/category/文具.html → "文具"
+    function getCategory() {
+      const parts = window.location.pathname.split('/');
+      return decodeURIComponent(parts[parts.length - 1].replace('.html', ''));
+    }
+
+    async function loadCategory() {
+      const cat = getCategory();
+      const res = await fetch(DATA_URL);
+      const products = await res.json();
+      const filtered = products.filter(p => p.category === cat);
+
+      function render(lang) {
+        document.getElementById('catHeading').textContent = cat;
+        document.getElementById('catCount').textContent = filtered.length + ' 件赠品';
+        document.title = cat + ' — ' + t('brand');
+
+        const grid = document.getElementById('catGrid');
+        grid.innerHTML = filtered.map(p => `
+          <article class="product-card" onclick="location.href='/zh-cn/product/${p.id}.html'" tabindex="0">
+            <div class="card-thumb">
+              <span class="product-emoji">${p.emoji || ''}</span>
+              ${p.image ? `<img src="${p.image}" alt="${p.title[lang]}" loading="lazy" onerror="this.style.display='none'" />` : ''}
+            </div>
+            <div class="card-body">
+              <span class="card-cat">${p.category}</span>
+              <h3 class="card-title">${p.title[lang]}</h3>
+              <p class="card-desc">${p.desc[lang]}</p>
+              <a class="card-buy-hint" href="${p.link_taobao}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                ${t('buy_btn')} →
+              </a>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      render(currentLang);
+      window.onLangChange = render;
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCategory);
+  </script>
+</body>
+</html>
