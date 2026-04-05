@@ -7,7 +7,7 @@
  *   - Product detail modal
  */
 
-const DATA_URL = '/data/products.json';
+const DATA_URL = '/chaobooks-gifts/data/products.json';
 
 let products = [];
 let activeCategory = 'all';
