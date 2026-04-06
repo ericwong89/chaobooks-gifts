@@ -1,20 +1,8 @@
-/**
- * app.js — JSON-driven page renderer
- * Reads /data/products.json and renders:
- *   - Hero carousel (hot items)
- *   - Category tabs
- *   - Product grid
- *   - Product detail modal
- */
-
 const DATA_URL = '/chaobooks-gifts/data/products.json';
 
 let products = [];
 let activeCategory = 'all';
-let carouselIndex = 0;
-let carouselTimer = null;
 
-/* ─── Fetch data ─────────────────────────────────────── */
 async function loadProducts() {
   try {
     const res = await fetch(DATA_URL);
@@ -25,13 +13,11 @@ async function loadProducts() {
   }
 }
 
-/* ─── Init ───────────────────────────────────────────── */
 function initPage() {
+  renderHeroGrid();
   buildCategoryTabs();
-  renderCarousel();
   renderGrid();
 
-  // Category tab clicks
   document.querySelector('.tabs-scroll').addEventListener('click', e => {
     const btn = e.target.closest('.tab');
     if (!btn) return;
@@ -41,18 +27,24 @@ function initPage() {
     renderGrid();
   });
 
-  // Modal close
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalBackdrop').addEventListener('click', e => {
     if (e.target === document.getElementById('modalBackdrop')) closeModal();
   });
-  document.getElementById('carPrev').addEventListener('click', () => moveCarousel(-1));
-  document.getElementById('carNext').addEventListener('click', () => moveCarousel(1));
-
-  startCarouselTimer();
 }
 
-/* ─── Category tabs ──────────────────────────────────── */
+function renderHeroGrid() {
+  const grid = document.getElementById('heroGrid');
+  if (!grid) return;
+  const items = products.slice(0, 4);
+  grid.innerHTML = items.map(p => `
+    <div class="hero-thumb" onclick="openModal('${p.id}')" style="cursor:pointer;">
+      ${p.image ? `<img src="${p.image}" alt="${p.title[currentLang]}" loading="lazy" onerror="this.style.display='none'" />` : ''}
+      <span style="font-size:32px;position:relative;z-index:1;">${p.emoji || ''}</span>
+    </div>
+  `).join('');
+}
+
 function buildCategoryTabs() {
   const cats = [...new Set(products.map(p => p.category))];
   const container = document.querySelector('.tabs-scroll');
@@ -65,87 +57,24 @@ function buildCategoryTabs() {
   });
 }
 
-/* ─── Carousel ───────────────────────────────────────── */
-function renderCarousel() {
-  const hot = products.filter(p => p.hot);
-  if (!hot.length) return;
-
-  const inner = document.getElementById('carouselInner');
-  const dots = document.getElementById('carouselDots');
-
-  inner.innerHTML = hot.map((p, i) => `
-    <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-id="${p.id}">
-      <div class="carousel-content">
-        <p class="carousel-tag" data-i18n="hot_label">${t('hot_label')}</p>
-        <h2 class="carousel-title">${p.title[currentLang]}</h2>
-        <p class="carousel-desc">${p.desc[currentLang]}</p>
-        <a class="taobao-btn small" href="${p.link_taobao}" target="_blank" rel="noopener">${t('buy_btn')}</a>
-      </div>
-      <div class="carousel-thumb">
-        <span class="product-emoji">${p.emoji || ''}</span>
-        ${p.image ? `<img src="${p.image}" alt="${p.title[currentLang]}" loading="lazy" onerror="this.style.display='none'" />` : ''}
-      </div>
-    </div>
-  `).join('');
-
-  dots.innerHTML = hot.map((_, i) => `
-    <button class="dot ${i === 0 ? 'active' : ''}" data-idx="${i}" aria-label="Slide ${i + 1}"></button>
-  `).join('');
-
-  dots.addEventListener('click', e => {
-    const btn = e.target.closest('.dot');
-    if (!btn) return;
-    goCarousel(parseInt(btn.dataset.idx));
-  });
-}
-
-function goCarousel(idx) {
-  const slides = document.querySelectorAll('.carousel-slide');
-  const dots = document.querySelectorAll('.dot');
-  if (!slides.length) return;
-  carouselIndex = (idx + slides.length) % slides.length;
-  slides.forEach((s, i) => s.classList.toggle('active', i === carouselIndex));
-  dots.forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
-}
-
-function moveCarousel(dir) {
-  goCarousel(carouselIndex + dir);
-  resetCarouselTimer();
-}
-
-function startCarouselTimer() {
-  carouselTimer = setInterval(() => moveCarousel(1), 4000);
-}
-
-function resetCarouselTimer() {
-  clearInterval(carouselTimer);
-  startCarouselTimer();
-}
-
-/* ─── Product grid ───────────────────────────────────── */
 function renderGrid() {
   const grid = document.getElementById('productGrid');
-  const filtered = activeCategory === 'all'
-    ? products
-    : products.filter(p => p.category === activeCategory);
-
+  const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
   if (!filtered.length) {
     grid.innerHTML = `<p class="empty-msg">${t('no_items')}</p>`;
     return;
   }
-
   grid.innerHTML = filtered.map(p => `
-    <article class="product-card" data-id="${p.id}" tabindex="0" role="button"
-      aria-label="${p.title[currentLang]}">
+    <article class="product-card" data-id="${p.id}" tabindex="0" role="button">
       <div class="card-thumb">
-        <span class="product-emoji">${p.emoji || ''}</span>
         ${p.image ? `<img src="${p.image}" alt="${p.title[currentLang]}" loading="lazy" onerror="this.style.display='none'" />` : ''}
+        <span style="font-size:48px;position:relative;z-index:1;">${p.emoji || ''}</span>
       </div>
       <div class="card-body">
         <span class="card-cat">${p.category}</span>
         <h3 class="card-title">${p.title[currentLang]}</h3>
         <p class="card-desc">${p.desc[currentLang]}</p>
-        <span class="card-buy-hint">${t('buy_btn')} →</span>
+        <span class="card-buy">${t('buy_btn')} →</span>
       </div>
     </article>
   `).join('');
@@ -156,39 +85,38 @@ function renderGrid() {
   });
 }
 
-/* ─── Modal ──────────────────────────────────────────── */
 function openModal(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
-
   document.getElementById('modalImg').innerHTML =
-    `<span class="product-emoji large">${p.emoji || ''}</span>
-     ${p.image ? `<img src="${p.image}" alt="${p.title[currentLang]}" onerror="this.style.display='none'" />` : ''}`;
+    `${p.image ? `<img src="${p.image}" alt="${p.title[currentLang]}" onerror="this.style.display='none'" />` : ''}
+     <span style="font-size:72px;position:relative;z-index:1;">${p.emoji || ''}</span>`;
   document.getElementById('modalCat').textContent = p.category;
   document.getElementById('modalTitle').textContent = p.title[currentLang];
   document.getElementById('modalDesc').textContent = p.desc[currentLang];
   document.getElementById('modalBuyBtn').href = p.link_taobao;
   document.getElementById('modalBuyBtn').textContent = t('buy_btn');
   document.getElementById('modalClose').textContent = t('back');
-
   const backdrop = document.getElementById('modalBackdrop');
   backdrop.hidden = false;
-  backdrop.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
-  const backdrop = document.getElementById('modalBackdrop');
-  backdrop.hidden = true;
-  backdrop.setAttribute('aria-hidden', 'true');
+  document.getElementById('modalBackdrop').hidden = true;
   document.body.style.overflow = '';
 }
 
-/* ─── Re-render on language change ──────────────────── */
-function onLangChange(lang) {
-  renderCarousel();
+function handleEmailSubmit(e) {
+  e.preventDefault();
+  const note = document.getElementById('emailNote');
+  note.textContent = t('email_thanks');
+  document.getElementById('emailInput').value = '';
+}
+
+function onLangChange() {
+  renderHeroGrid();
   renderGrid();
 }
 
-/* ─── Boot ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', loadProducts);
