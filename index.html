@@ -3,48 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>赠品集</title>
+  <title>CHAOBOOKS GIFTS — 日本杂志赠品专门店</title>
   <link rel="stylesheet" href="/chaobooks-gifts/assets/css/main.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+SC:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <header class="navbar">
     <a href="/chaobooks-gifts/index.html" class="logo">
-      <span class="logo-badge">赠</span>
-      <span class="logo-text" data-i18n="brand">赠品集</span>
+      <span class="logo-en">CHAOBOOKS</span>
+      <span class="logo-sub">GIFTS</span>
     </a>
     <nav class="nav-links">
-      <a href="#" data-i18n="nav_home">首页</a>
-      <a href="#" data-i18n="nav_category">分类</a>
+      <a href="/chaobooks-gifts/index.html" data-i18n="nav_home">首页</a>
+      <a href="#section-gifts" data-i18n="nav_category">分类</a>
+      <a href="#section-about" data-i18n="nav_about">关于</a>
     </nav>
     <div class="lang-switch">
-      <button class="lang-btn active" data-lang="zh-cn">简体</button>
-      <button class="lang-btn" data-lang="zh-tw">繁體</button>
+      <button class="lang-btn active" data-lang="zh-cn">简</button>
+      <button class="lang-btn" data-lang="zh-tw">繁</button>
     </div>
   </header>
 
-  <!-- CAROUSEL -->
-  <section class="carousel">
-    <div class="carousel-inner" id="carouselInner"></div>
-    <div class="carousel-dots" id="carouselDots"></div>
-    <button class="carousel-arrow prev" id="carPrev">&#8249;</button>
-    <button class="carousel-arrow next" id="carNext">&#8250;</button>
+  <section class="hero">
+    <div class="hero-content">
+      <p class="section-label" data-i18n="hero_label">日本杂志赠品专门店</p>
+      <h1 class="hero-title" data-i18n="hero_title">每期杂志<br><em>精选赠品</em></h1>
+      <p class="hero-desc" data-i18n="hero_desc">收录日本各大杂志随刊附赠品，简繁双语介绍，直通淘宝购买。</p>
+      <div class="hero-actions">
+        <a href="#section-gifts" class="btn-primary" data-i18n="hero_cta">浏览赠品</a>
+        <a href="#section-about" class="btn-ghost" data-i18n="hero_cta2">了解更多</a>
+      </div>
+    </div>
+    <div class="hero-grid" id="heroGrid"></div>
   </section>
 
-  <!-- CATEGORY TABS -->
-  <section class="category-tabs">
+  <section class="category-bar" id="section-gifts">
+    <span class="bar-label" data-i18n="category_label">分类</span>
     <div class="tabs-scroll">
       <button class="tab active" data-cat="all" data-i18n="all">全部</button>
     </div>
   </section>
 
-  <!-- PRODUCT GRID -->
-  <main class="product-grid" id="productGrid"></main>
+  <section class="gifts-section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title" data-i18n="latest">最新赠品</h2>
+        <span class="section-title-en">Latest Gifts</span>
+      </div>
+      <button class="view-all" data-i18n="view_all">查看全部</button>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </section>
 
-  <!-- PRODUCT DETAIL MODAL -->
+  <section class="about-section" id="section-about">
+    <div class="about-inner">
+      <div class="about-bar"></div>
+      <div class="about-body">
+        <p class="section-label">About Us</p>
+        <h3 class="about-title" data-i18n="about_title">关于 CHAOBOOKS</h3>
+        <p class="about-desc" data-i18n="about_desc">专注收录日本杂志随刊赠品资讯，提供简繁双语介绍与正品购买渠道。每期更新，帮你找到心仪的杂志赠品。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="email-section" id="section-email">
+    <p class="section-label">Newsletter</p>
+    <h3 class="email-title" data-i18n="email_title">订阅最新赠品资讯</h3>
+    <p class="email-desc" data-i18n="email_desc">每周发送最新日系杂志赠品情报，第一时间获取限量资讯。</p>
+    <form class="email-form" onsubmit="handleEmailSubmit(event)">
+      <input type="email" id="emailInput" placeholder="your@email.com" required />
+      <button type="submit" data-i18n="email_btn">订阅</button>
+    </form>
+    <p class="email-note" id="emailNote"></p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <p class="footer-logo">CHAOBOOKS GIFTS</p>
+        <p class="footer-tagline" data-i18n="footer_tagline">日本杂志赠品专门店</p>
+      </div>
+      <nav class="footer-links">
+        <a href="#section-about" data-i18n="nav_about">关于我们</a>
+        <a href="#section-email" data-i18n="footer_contact">联系方式</a>
+        <a href="#" data-i18n="footer_privacy">隐私政策</a>
+      </nav>
+      <p class="footer-copy">© 2025 CHAOBOOKS</p>
+    </div>
+  </footer>
+
   <div class="modal-backdrop" id="modalBackdrop" hidden>
     <div class="modal" id="productModal">
       <button class="modal-close" id="modalClose" data-i18n="back">← 返回</button>
@@ -52,7 +101,7 @@
       <span class="modal-cat" id="modalCat"></span>
       <h2 class="modal-title" id="modalTitle"></h2>
       <p class="modal-desc" id="modalDesc"></p>
-      <a class="taobao-btn" id="modalBuyBtn" target="_blank" rel="noopener" data-i18n="buy_btn">淘宝购买</a>
+      <a class="btn-primary full" id="modalBuyBtn" target="_blank" rel="noopener" data-i18n="buy_btn">淘宝购买</a>
     </div>
   </div>
 
