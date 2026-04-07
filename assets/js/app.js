@@ -1,3 +1,4 @@
+// 自动识别路径
 const DATA_URL = window.location.hostname.includes('netlify.app') 
     ? '/data/products.json' 
     : '/chaobooks-gifts/data/products.json';
@@ -9,9 +10,19 @@ function getCurrentLang() {
   return typeof getLang === 'function' ? getLang() : 'zh-cn';
 }
 
+// 核心：处理图片路径
+function getSafeImgSrc(path) {
+  if (!path) return '';
+  if (path.startsWith('http') || path.startsWith('//')) return path;
+  if (window.location.pathname.includes('/chaobooks-gifts/')) {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `/chaobooks-gifts/${cleanPath}`;
+  }
+  return path;
+}
+
 async function loadProducts() {
   try {
-    // 加上时间戳防止浏览器读取旧的 products.json 缓存
     const res = await fetch(`${DATA_URL}?t=${Date.now()}`);
     const data = await res.json();
     products = data.products || data;
@@ -21,26 +32,29 @@ async function loadProducts() {
   }
 }
 
-// 核心：处理图片路径的万能函数
-function getSafeImgSrc(path) {
-  if (!path) return '';
-  // 1. 如果是完整的网络链接 (http...)，直接返回
-  if (path.startsWith('http') || path.startsWith('//')) {
-    return path;
-  }
-  // 2. 如果是本地路径且在子目录下，补全子目录
-  if (window.location.pathname.includes('/chaobooks-gifts/')) {
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `/chaobooks-gifts/${cleanPath}`;
-  }
-  return path;
-}
-
 function initPage() {
   renderHeroGrid();
-  buildCategoryTabs();
+  buildCategoryTabs(); // 报错就在这里，因为没找到下面的函数定义
   renderGrid();
-  // ... 其他代码保持不变 (分类切换、弹窗逻辑)
+
+  const tabsContainer = document.querySelector('.tabs-scroll');
+  if (tabsContainer) {
+    tabsContainer.addEventListener('click', e => {
+      const btn = e.target.closest('.tab');
+      if (!btn) return;
+      activeCategory = btn.dataset.cat;
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid();
+    });
+  }
+
+  const modalClose = document.getElementById('modalClose');
+  const backdrop = document.getElementById('modalBackdrop');
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+  if (backdrop) {
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+  }
 }
 
 function renderHeroGrid() {
@@ -53,6 +67,22 @@ function renderHeroGrid() {
       ${p.image ? `<img src="${getSafeImgSrc(p.image)}" style="width:100%;height:100%;object-fit:cover;" />` : `<span style="font-size:32px;">${p.emoji || ''}</span>`}
     </div>
   `).join('');
+}
+
+// 这是你刚才缺失的关键函数
+function buildCategoryTabs() {
+  const container = document.querySelector('.tabs-scroll');
+  if (!container || !products.length) return;
+  const cats = [...new Set(products.map(p => p.category))].filter(Boolean);
+  const existingTabs = container.querySelectorAll('.tab:not([data-cat="all"])');
+  existingTabs.forEach(t => t.remove());
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'tab';
+    btn.dataset.cat = cat;
+    btn.textContent = cat;
+    container.appendChild(btn);
+  });
 }
 
 function renderGrid() {
@@ -96,9 +126,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-function onLangChange() {
-  renderHeroGrid();
-  renderGrid();
-}
+function onLangChange() { renderHeroGrid(); renderGrid(); }
 
 document.addEventListener('DOMContentLoaded', loadProducts);
