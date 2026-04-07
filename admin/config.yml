@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: ericwong89/chaobooks-gifts  # https://github.com/ericwong89/chaobooks-gifts
+  repo: ericwong89/chaobooks-gifts
   branch: main 
 
 media_folder: "assets/images" 
