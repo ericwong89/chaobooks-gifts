@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: ericwong89/chaobooks-gifts
   branch: main
 
 media_folder: "assets/images"
