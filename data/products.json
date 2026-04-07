@@ -19,14 +19,15 @@
     {
       "id": "002",
       "title": {
-        "zh-cn": "限量马克杯",
-        "zh-tw": "限量馬克杯"
+        "zh-cn": "MOOMIN大容量折叠波士顿包与网状收纳包",
+        "zh-tw": "MOOMIN大容量折叠波士顿包与网状收纳包"
       },
       "desc": {
-        "zh-cn": "高品质陶瓷材质，独家联名图案，容量350ml，可微波炉使用。",
+        "zh-cn": "MOOMIN x Samansa Mos2 联名打造，波士顿包印满了姆明谷小伙伴们的欢快图案，自重轻盈且容量惊人，足以收纳两天一夜的旅行衣物。 
+特别的是波士顿包在不用时可以轻松折叠，收纳进印有小美（Little My）图案的网状收纳袋中，这款半透明的网状包亦可单独作为化妆包或数码收纳袋使用。",
         "zh-tw": "高品質陶瓷材質，獨家聯名圖案，容量350ml，可微波爐使用。"
       },
-      "image": "/assets/images/mug.jpg",
+      "image": "https://wechat-1309308115.cos.ap-guangzhou.myqcloud.com/Liniere%202026-4-2.jpg",
       "emoji": "☕",
       "link_taobao": "https://item.taobao.com/xxxx002",
       "category": "生活用品",
@@ -35,14 +36,14 @@
     {
       "id": "003",
       "title": {
-        "zh-cn": "帆布手提袋",
-        "zh-tw": "帆布手提袋"
+        "zh-cn": "OLD ENGLAND 托特包",
+        "zh-tw": "OLD ENGLAND 托特包"
       },
       "desc": {
-        "zh-cn": "环保棉麻材质，大容量设计，印花图案清新，适合日常通勤。",
+        "zh-cn": "杂志社与拥有百年历史的法式名牌“OLD ENGLAND”合作推出了这款专为毕业典礼、商务办公设计的“礼仪托特包”。。",
         "zh-tw": "環保棉麻材質，大容量設計，印花圖案清新，適合日常通勤。"
       },
-      "image": "/assets/images/bag.jpg",
+      "image": "https://wechat-1309308115.cos.ap-guangzhou.myqcloud.com/GLOW%202026-4-2.jpg",
       "emoji": "👜",
       "link_taobao": "https://item.taobao.com/xxxx003",
       "category": "服饰",
