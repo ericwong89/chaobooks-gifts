@@ -6,14 +6,15 @@ media_folder: "assets/images"
 public_folder: "/assets/images"
 
 collections:
-  - name: "data"
+  - name: "content_data"
     label: "数据管理"
     files:
-      - label: "赠品列表"
-        name: "products_file"
+      - label: "赠品列表管理"
+        name: "gifts_manager"
         file: "data/products.json"
+        allow_add: true # 明确允许添加新项
         fields:
-          - label: "赠品列表"
+          - label: "现有赠品列表"
             name: "products"
             widget: "list"
             summary: "{{title.zh-cn}}"
@@ -36,4 +37,3 @@ collections:
               - { label: "淘宝购买链接", name: "link_taobao", widget: "string" }
               - { label: "分类", name: "category", widget: "select", options: ["文具", "生活用品", "服饰", "收纳包", "美妆个护", "家居用品", "时尚配饰", "其他"] }
               - { label: "是否热门推荐", name: "hot", widget: "boolean", default: false }
-              - { label: "品牌关键词 (选填)", name: "brand", widget: "string", required: false }
