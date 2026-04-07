@@ -6,16 +6,17 @@ media_folder: "assets/images"
 public_folder: "/assets/images"
 
 collections:
-  - name: "content_data"
+  - name: "data"
     label: "数据管理"
+    # 我们改用 folder 模式来直接操作这个 json，这是对付纯数组最稳的方式
     files:
-      - label: "赠品列表管理"
-        name: "gifts_manager"
+      - label: "赠品列表"
+        name: "products_file"
         file: "data/products.json"
-        allow_add: true # 明确允许添加新项
+        # 核心修正：这里不使用嵌套的 list，直接定义顶级字段
         fields:
-          - label: "现有赠品列表"
-            name: "products"
+          - label: "产品列表"
+            name: "products" # 这里必须对应，CMS 会尝试把数组内容填入这个 key
             widget: "list"
             summary: "{{title.zh-cn}}"
             fields:
@@ -26,14 +27,14 @@ collections:
                 fields:
                   - { label: "简体标题", name: "zh-cn", widget: "string" }
                   - { label: "繁体标题", name: "zh-tw", widget: "string" }
-              - label: "详细描述"
+              - label: "描述"
                 name: "desc"
                 widget: "object"
                 fields:
                   - { label: "简体描述", name: "zh-cn", widget: "text" }
                   - { label: "繁体描述", name: "zh-tw", widget: "text" }
-              - { label: "赠品主图", name: "image", widget: "image" }
-              - { label: "Emoji 图标", name: "emoji", widget: "string" }
-              - { label: "淘宝购买链接", name: "link_taobao", widget: "string" }
-              - { label: "分类", name: "category", widget: "select", options: ["文具", "生活用品", "服饰", "收纳包", "美妆个护", "家居用品", "时尚配饰", "其他"] }
-              - { label: "是否热门推荐", name: "hot", widget: "boolean", default: false }
+              - { label: "图片路径", name: "image", widget: "image" }
+              - { label: "Emoji", name: "emoji", widget: "string" }
+              - { label: "淘宝链接", name: "link_taobao", widget: "string" }
+              - { label: "分类", name: "category", widget: "string" }
+              - { label: "热门推荐", name: "hot", widget: "boolean" }
