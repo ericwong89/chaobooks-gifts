@@ -1,4 +1,4 @@
-// 自动识别环境：如果是本地预览或特定的子目录则保留，如果是 Netlify 根目录则自动修正
+// 自动识别环境：Netlify 根目录或本地子目录
 const DATA_URL = window.location.hostname.includes('netlify.app') 
     ? '/data/products.json' 
     : '/chaobooks-gifts/data/products.json';
@@ -6,30 +6,24 @@ const DATA_URL = window.location.hostname.includes('netlify.app')
 let products = [];
 let activeCategory = 'all';
 
-async function loadProducts() {
-  console.log('正在尝试从以下地址加载数据:', DATA_URL);
-  try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error(`服务器返回错误: ${res.status}`);
-    
-    const data = await res.json();
-    console.log('原始获取到的数据:', data);
-    
-    // 适配 {"products": [...]} 格式
-    products = data.products || data;
-    console.log('解析后的产品列表:', products);
-    
-    initPage();
-  } catch (e) {
-    console.error('加载 products.json 失败:', e);
-    const grid = document.getElementById('productGrid');
-    if (grid) grid.innerHTML = `<p style="text-align:center;padding:50px;">数据加载失败，请刷新页面重试。<br><small>${e.message}</small></p>`;
-  }
-}
-
 // 获取实时语言的辅助函数
 function getCurrentLang() {
   return typeof getLang === 'function' ? getLang() : 'zh-cn';
+}
+
+async function loadProducts() {
+  try {
+    const res = await fetch(DATA_URL);
+    if (!res.ok) throw new Error(`数据加载失败: ${res.status}`);
+    const data = await res.json();
+    // 适配 {"products": [...]} 格式
+    products = data.products || data;
+    initPage();
+  } catch (e) {
+    console.error('加载失败:', e);
+    const grid = document.getElementById('productGrid');
+    if (grid) grid.innerHTML = `<p style="text-align:center;padding:50px;">加载失败，请刷新重试。</p>`;
+  }
 }
 
 function initPage() {
@@ -66,7 +60,7 @@ function renderHeroGrid() {
   const items = products.slice(0, 4);
   grid.innerHTML = items.map(p => `
     <div class="hero-thumb" onclick="openModal('${p.id}')" style="cursor:pointer;">
-      ${p.image ? `<img src="${p.image}" alt="${p.title[lang] || ''}" loading="lazy" />` : ''}
+      ${p.image ? `<img src="${p.image}" alt="${p.title[lang] || ''}" />` : ''}
       <span style="font-size:32px;position:relative;z-index:1;">${p.emoji || ''}</span>
     </div>
   `).join('');
@@ -93,15 +87,10 @@ function renderGrid() {
   const lang = getCurrentLang();
   const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
 
-  if (!filtered.length) {
-    grid.innerHTML = `<p class="empty-msg">暂无此类赠品</p>`;
-    return;
-  }
-
   grid.innerHTML = filtered.map(p => `
     <article class="product-card" data-id="${p.id}" tabindex="0" role="button">
       <div class="card-thumb">
-        ${p.image ? `<img src="${p.image}" alt="${p.title[lang] || ''}" loading="lazy" />` : ''}
+        ${p.image ? `<img src="${p.image}" alt="${p.title[lang] || ''}" />` : ''}
         <span style="font-size:48px;position:relative;z-index:1;">${p.emoji || ''}</span>
       </div>
       <div class="card-body">
@@ -144,4 +133,5 @@ function onLangChange() {
   renderGrid();
 }
 
+// 确保这是最后一行
 document.addEventListener('DOMContentLoaded', loadProducts);
