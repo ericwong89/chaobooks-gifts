@@ -72,8 +72,8 @@
     <p class="section-label">Newsletter</p>
     <h3 class="email-title" data-i18n="email_title">订阅最新赠品资讯</h3>
     <p class="email-desc" data-i18n="email_desc">每周发送最新日系杂志赠品情报，第一时间获取限量资讯。</p>
-    <form class="email-form" onsubmit="handleEmailSubmit(event)">
-      <input type="email" id="emailInput" placeholder="your@email.com" required />
+    <form class="email-form" action="https://app.kit.com/forms/9295920/subscriptions" method="post" target="_blank" onsubmit="handleKitSubmit(event)">
+      <input type="email" name="email_address" id="emailInput" placeholder="your@email.com" required />
       <button type="submit" data-i18n="email_btn">订阅</button>
     </form>
     <p class="email-note" id="emailNote"></p>
