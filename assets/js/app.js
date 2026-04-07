@@ -107,8 +107,8 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-function handleEmailSubmit(e) {
-  e.preventDefault();
+function handleKitSubmit(e) {
+
   const note = document.getElementById('emailNote');
   note.textContent = t('email_thanks');
   document.getElementById('emailInput').value = '';
