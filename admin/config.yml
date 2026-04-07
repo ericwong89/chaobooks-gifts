@@ -1,0 +1,38 @@
+backend:
+  name: github
+  repo: 你的用户名/你的仓库名  # 请修改为你的实际 GitHub 路径
+  branch: main # 或者是你的主分支名
+
+media_folder: "assets/images" # 图片存储路径
+public_folder: "/assets/images" # 网页读取图片的路径
+
+collections:
+  - name: "products"
+    label: "赠品管理"
+    label_singular: "件赠品"
+    file: "data/products.json" # 修改你现有的 JSON 文件
+    extension: "json"
+    format: "json"
+    fields:
+      - { label: "系统 ID", name: "id", widget: "uuid" }
+      - { label: "分类", name: "category", widget: "select", options: ["收纳包", "美妆个护", "家居用品", "时尚配饰", "文具", "其他"] }
+      - { label: "品牌关键词", name: "brand", widget: "string", hint: "例如：LeSportsac, Moomin, Dior" }
+      - { label: "Emoji 图标", name: "emoji", widget: "string", default: "🎁" }
+      
+      - label: "标题 (简繁自动统一格式)"
+        name: "title"
+        widget: "object"
+        fields:
+          - { label: "简体标题 (赠品名 | 杂志名+刊号)", name: "zh-cn", widget: "string" }
+          - { label: "繁体标题 (贈品名 | 雜誌名+刊號)", name: "zh-tw", widget: "string" }
+          
+      - label: "详细描述"
+        name: "desc"
+        widget: "object"
+        fields:
+          - { label: "简体描述", name: "zh-cn", widget: "text" }
+          - { label: "繁体描述", name: "zh-tw", widget: "text" }
+          
+      - { label: "赠品主图", name: "image", widget: "image" }
+      - { label: "杂志封面", name: "cover", widget: "image", required: false }
+      - { label: "淘宝购买链接", name: "link_taobao", widget: "string" }
