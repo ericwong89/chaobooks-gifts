@@ -6,7 +6,12 @@ let activeCategory = 'all';
 async function loadProducts() {
   try {
     const res = await fetch(DATA_URL);
-    products = await res.json();
+    const data = await res.json(); // 1. 先获取整个 JSON 对象
+    
+    // 2. 核心修改：从对象中提取名为 products 的数组
+    // 这样做兼容性最好：如果 data 是对象就取 .products，如果是旧的纯数组就取 data 本身
+    products = data.products || data; 
+    
     initPage();
   } catch (e) {
     console.error('Failed to load products.json', e);
