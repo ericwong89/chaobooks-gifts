@@ -52,7 +52,7 @@ function detectLang() {
 }
 
 let currentLang = detectLang();
-
+function getLang() { return currentLang; }
 function t(key) {
   return (I18N[currentLang] && I18N[currentLang][key]) || key;
 }
