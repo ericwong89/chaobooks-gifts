@@ -34,7 +34,7 @@ async function loadProducts() {
 
 function initPage() {
   renderHeroGrid();
-  buildCategoryTabs(); // 报错就在这里，因为没找到下面的函数定义
+  buildCategoryTabs(); 
   renderGrid();
 
   const tabsContainer = document.querySelector('.tabs-scroll');
@@ -69,7 +69,6 @@ function renderHeroGrid() {
   `).join('');
 }
 
-// 这是你刚才缺失的关键函数
 function buildCategoryTabs() {
   const container = document.querySelector('.tabs-scroll');
   if (!container || !products.length) return;
