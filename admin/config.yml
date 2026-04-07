@@ -10,7 +10,7 @@ collections:
     label: "数据管理"
     files:
       - label: "赠品列表"
-        name: "products"
+        name: "products_file"
         file: "data/products.json"
         fields:
           - label: "赠品列表"
@@ -19,14 +19,11 @@ collections:
             summary: "{{title.zh-cn}}"
             fields:
               - { label: "系统 ID", name: "id", widget: "string" }
-              - { label: "分类", name: "category", widget: "select", options: ["收纳包", "美妆个护", "家居用品", "时尚配饰", "文具", "其他"] }
-              - { label: "品牌关键词", name: "brand", widget: "string" }
-              - { label: "Emoji 图标", name: "emoji", widget: "string", default: "🎁" }
               - label: "标题"
                 name: "title"
                 widget: "object"
                 fields:
-                  - { label: "简体标题 (赠品名 | 杂志名+刊号)", name: "zh-cn", widget: "string" }
+                  - { label: "简体标题", name: "zh-cn", widget: "string" }
                   - { label: "繁体标题", name: "zh-tw", widget: "string" }
               - label: "详细描述"
                 name: "desc"
@@ -35,4 +32,8 @@ collections:
                   - { label: "简体描述", name: "zh-cn", widget: "text" }
                   - { label: "繁体描述", name: "zh-tw", widget: "text" }
               - { label: "赠品主图", name: "image", widget: "image" }
+              - { label: "Emoji 图标", name: "emoji", widget: "string" }
               - { label: "淘宝购买链接", name: "link_taobao", widget: "string" }
+              - { label: "分类", name: "category", widget: "select", options: ["文具", "生活用品", "服饰", "收纳包", "美妆个护", "家居用品", "时尚配饰", "其他"] }
+              - { label: "是否热门推荐", name: "hot", widget: "boolean", default: false }
+              - { label: "品牌关键词 (选填)", name: "brand", widget: "string", required: false }
