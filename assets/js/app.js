@@ -86,15 +86,20 @@ function renderProducts(products) {
     }
 
     grid.innerHTML = products.map((item, index) => `
-        <div class="product-card" onclick="openModal(${index})" style="cursor:pointer">
-            <div class="product-img-wrapper">
-                <img src="${item.image}" alt="${item.title}" loading="lazy">
+        <div class="product-card" onclick="openModal(${index})" style="cursor:pointer; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; transition: transform 0.2s;">
+            <div class="product-img-wrapper" style="overflow:hidden; border-radius: 4px;">
+                <img src="${item.image}" alt="${item.title}" loading="lazy" style="width:100%; display:block; transition: scale 0.3s;">
             </div>
-            <div class="product-info">
-                <span class="product-cat">${item.category || '未分类'}</span>
-                <h3 class="product-title" style="font-family:'Noto Serif SC'">${item.title}</h3>
-                <div class="product-tags">
-                    ${item.tags.map(tag => `<span class="tag" style="margin-right:5px">#${tag}</span>`).join('')}
+            <div class="product-info" style="padding: 15px 5px;">
+                <h3 class="product-title" style="font-family:'Noto Serif SC', serif; font-size: 16px; margin: 0 0 10px 0; line-height: 1.4; color: #2A2A28;">
+                    ${item.title}
+                </h3>
+                <div class="product-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    ${item.tags.map(tag => `
+                        <span class="tag" style="background: #F4F6F4; color: #6B7F5E; padding: 2px 10px; border-radius: 12px; font-size: 11px; letter-spacing: 0.5px;">
+                            ${tag}
+                        </span>
+                    `).join('')}
                 </div>
             </div>
         </div>
