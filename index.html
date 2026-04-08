@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+SC:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
   
   <style>
-    /* 搜索框样式补丁 */
+    /* 搜索框样式 */
     .search-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
     .search-input { 
       width: 100%; padding: 12px 20px; border: 1px solid #eee; 
@@ -23,16 +23,18 @@
     }
     .search-input:focus { background: #fff; border-color: #6B7F5E; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     
-    /* 弹窗内容区样式 */
+    /* 详情页排版补丁 */
     .modal-body { padding: 20px; line-height: 1.8; color: #444; font-size: 15px; }
-    .modal-body img { max-width: 100%; border-radius: 4px; margin: 10px 0; }
-    .modal-body h2 { font-size: 18px; margin-top: 20px; border-left: 3px solid #6B7F5E; padding-left: 10px; }
-    
-    /* 原有 FormKit 样式保留... */
+    .modal-body img { max-width: 100% !important; height: auto !important; border-radius: 4px; margin: 15px 0; display: block; }
+    .modal-body h2 { font-size: 18px; margin-top: 25px; border-left: 4px solid #6B7F5E; padding-left: 12px; font-family: 'Noto Serif SC', serif; }
+    .modal-body ul { padding-left: 20px; margin: 10px 0; }
+    .modal-body li { margin-bottom: 8px; }
+
+    /* 原有 Newsletter 样式 */
     #section-email .formkit-form { background: transparent !important; box-shadow: none !important; padding: 0 !important; max-width: 380px; margin: 0 auto; }
     #section-email .formkit-fields { display: flex !important; gap: 8px !important; }
-    #section-email .formkit-input { width: 100% !important; padding: 10px 16px !important; border: 0.5px solid #C5D4C6 !important; border-radius: 2px !important; font-size: 13px !important; }
-    #section-email .formkit-submit { padding: 10px 22px !important; background: #6B7F5E !important; color: #fff !important; border: none !important; cursor: pointer !important; }
+    #section-email .formkit-input { width: 100% !important; padding: 10px 16px !important; border: 0.5px solid #C5D4C6 !important; border-radius: 2px !important; }
+    #section-email .formkit-submit { padding: 10px 22px !important; background: #6B7F5E !important; color: #fff !important; border: none; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -43,9 +45,9 @@
       <span class="logo-sub">GIFTS</span>
     </a>
     <nav class="nav-links">
-      <a href="/chaobooks-gifts/index.html" data-i18n="nav_home">首页</a>
-      <a href="#section-gifts" data-i18n="nav_category">分类</a>
-      <a href="#section-about" data-i18n="nav_about">关于</a>
+      <a href="/chaobooks-gifts/index.html">首页</a>
+      <a href="#section-gifts">分类</a>
+      <a href="#section-about">关于</a>
     </nav>
     <div class="lang-switch">
       <button class="lang-btn active" data-lang="zh-cn">简</button>
@@ -55,12 +57,12 @@
 
   <section class="hero">
     <div class="hero-content">
-      <p class="section-label" data-i18n="hero_label">日本杂志赠品专门店</p>
-      <h1 class="hero-title" data-i18n="hero_title">每期杂志<br><em>精选赠品</em></h1>
-      <p class="hero-desc" data-i18n="hero_desc">收录日本各大杂志随刊附赠品，简繁双语介绍，直通淘宝购买。</p>
+      <p class="section-label">日本杂志赠品专门店</p>
+      <h1 class="hero-title">每期杂志<br><em>精选赠品</em></h1>
+      <p class="hero-desc">收录日本各大杂志随刊附赠品，简繁双语介绍，直通淘宝购买。</p>
       <div class="hero-actions">
-        <a href="#section-gifts" class="btn-primary" data-i18n="hero_cta">浏览赠品</a>
-        <a href="#section-about" class="btn-ghost" data-i18n="hero_cta2">了解更多</a>
+        <a href="#section-gifts" class="btn-primary">浏览赠品</a>
+        <a href="#section-about" class="btn-ghost">了解更多</a>
       </div>
     </div>
     <div class="hero-grid" id="heroGrid"></div>
@@ -71,16 +73,16 @@
   </div>
 
   <section class="category-bar" id="section-gifts">
-    <span class="bar-label" data-i18n="category_label">分类</span>
+    <span class="bar-label">分类</span>
     <div class="tabs-scroll" id="categoryTabs">
-      <button class="tab active" data-cat="all" data-i18n="all">全部</button>
-      </div>
+      <button class="tab active" data-cat="all">全部</button>
+    </div>
   </section>
 
   <section class="gifts-section">
     <div class="section-header">
       <div class="section-title-group">
-        <h2 class="section-title" data-i18n="latest">最新赠品</h2>
+        <h2 class="section-title">最新赠品</h2>
         <span class="section-title-en">Latest Gifts</span>
       </div>
     </div>
@@ -92,15 +94,15 @@
       <div class="about-bar"></div>
       <div class="about-body">
         <p class="section-label">About Us</p>
-        <h3 class="about-title" data-i18n="about_title">关于 CHAOBOOKS</h3>
-        <p class="about-desc" data-i18n="about_desc">专注收录日本杂志随刊赠品资讯，提供简繁双语介绍与正品购买渠道。</p>
+        <h3 class="about-title">关于 CHAOBOOKS</h3>
+        <p class="about-desc">专注收录日本杂志随刊赠品资讯，提供简繁双语介绍与正品购买渠道。</p>
       </div>
     </div>
   </section>
 
   <section class="email-section" id="section-email">
     <p class="section-label">Newsletter</p>
-    <h3 class="email-title" data-i18n="email_title">订阅最新赠品资讯</h3>
+    <h3 class="email-title">订阅最新赠品资讯</h3>
     <script async data-uid="06fd98a797" src="https://chaobooks.kit.com/06fd98a797/index.js"></script>
   </section>
 
@@ -113,3 +115,23 @@
       <p class="footer-copy">© 2026 CHAOBOOKS</p>
     </div>
   </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" id="productModal">
+      <button class="modal-close" id="modalClose">← 返回列表</button>
+      <div class="modal-img" id="modalImg"></div>
+      <div class="modal-info-header" style="padding: 20px 20px 0;">
+        <span class="modal-cat" id="modalCat" style="background:#6B7F5E; color:#fff; padding:2px 8px; font-size:11px; border-radius:2px;"></span>
+        <h2 class="modal-title" id="modalTitle" style="margin:10px 0; font-family:'Noto Serif SC', serif; font-weight:700;"></h2>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div style="padding: 20px;">
+        <a class="btn-primary full" id="modalBuyBtn" target="_blank" rel="noopener">淘宝购买</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/chaobooks-gifts/assets/js/i18n.js"></script>
+  <script src="/chaobooks-gifts/assets/js/app.js?v=20260408"></script>
+</body>
+</html>
