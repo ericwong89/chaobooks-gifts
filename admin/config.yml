@@ -2,22 +2,24 @@ backend:
   name: github
   repo: ericwong89/chaobooks-gifts
   branch: main
-
+  # 关键：改用开源的认证中转站，不再求 Netlify
+  base_url: https://cms-proxy.decapcms.org
+  auth_endpoint: auth
+  site_id: chaobooks-gifts
+  
 media_folder: "assets/images"
 public_folder: "/assets/images"
 
 collections:
   - name: "data"
     label: "数据管理"
-    # 我们改用 folder 模式来直接操作这个 json，这是对付纯数组最稳的方式
     files:
       - label: "赠品列表"
         name: "products_file"
         file: "data/products.json"
-        # 核心修正：这里不使用嵌套的 list，直接定义顶级字段
         fields:
           - label: "产品列表"
-            name: "products" # 这里必须对应，CMS 会尝试把数组内容填入这个 key
+            name: "products"
             widget: "list"
             summary: "{{title.zh-cn}}"
             fields:
@@ -34,8 +36,8 @@ collections:
                 fields:
                   - { label: "简体描述", name: "zh-cn", widget: "text" }
                   - { label: "繁体描述", name: "zh-tw", widget: "text" }
-              - { label: "图片路径", name: "image", widget: "image" }
-              - { label: "Emoji", name: "emoji", widget: "string" }
+              - { label: "图片路径/URL", name: "image", widget: "string", hint: "直接贴腾讯云链接" }
+              - { label: "Emoji图标", name: "emoji", widget: "string", default: "✨" }
               - { label: "淘宝链接", name: "link_taobao", widget: "string" }
               - { label: "分类", name: "category", widget: "string" }
-              - { label: "热门推荐", name: "hot", widget: "boolean" }
+              - { label: "热门推荐", name: "hot", widget: "boolean", default: false }
