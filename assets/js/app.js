@@ -1,130 +1,160 @@
-// 自动识别路径
-const DATA_URL = window.location.hostname.includes('netlify.app') 
-    ? '/data/products.json' 
-    : '/chaobooks-gifts/data/products.json';
+/**
+ * CHAOBOOKS GIFTS - 核心驱动引擎 v2.0
+ * 功能：自动读取 GitHub Content 目录下的 Markdown 文件，支持搜索与分类
+ */
 
-let products = [];
-let activeCategory = 'all';
+const CONFIG = {
+    repo: 'chaobooks-gifts',
+    user: 'hai-wong', // 请确认这是你的 GitHub 用户名
+    branch: 'main',
+    contentDir: 'content'
+};
 
-function getCurrentLang() {
-  return typeof getLang === 'function' ? getLang() : 'zh-cn';
+let allProducts = []; // 存储所有从 MD 解析出的数据
+
+// 1. 初始化：从 GitHub 获取文件列表
+async function init() {
+    try {
+        // 获取 content 文件夹下的文件列表
+        const response = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.contentDir}?ref=${CONFIG.branch}`);
+        const files = await response.json();
+        
+        // 过滤出所有 .md 文件
+        const mdFiles = files.filter(file => file.name.endsWith('.md'));
+        
+        // 并发读取所有 MD 文件内容
+        const promises = mdFiles.map(file => fetchMdContent(file.download_url));
+        allProducts = await Promise.all(promises);
+        
+        // 按日期排序（最新的在前）
+        allProducts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        renderCategories(); // 渲染分类按钮
+        renderProducts(allProducts); // 渲染产品列表
+        setupSearch(); // 初始化搜索
+        renderHeroGrid(); // 渲染顶部背景图
+    } catch (err) {
+        console.error("加载内容失败:", err);
+    }
 }
 
-// 核心：处理图片路径
-function getSafeImgSrc(path) {
-  if (!path) return '';
-  if (path.startsWith('http') || path.startsWith('//')) return path;
-  if (window.location.pathname.includes('/chaobooks-gifts/')) {
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `/chaobooks-gifts/${cleanPath}`;
-  }
-  return path;
+// 2. 读取并解析单个 Markdown 文件
+async function fetchMdContent(url) {
+    const response = await fetch(url);
+    const text = await response.text();
+    
+    // 使用 js-yaml 提取顶部的 YAML 属性
+    const parts = text.split('---');
+    const yamlContent = parts[1];
+    const markdownBody = parts.slice(2).join('---'); // 正文部分
+    
+    const data = jsyaml.load(yamlContent);
+    
+    return {
+        ...data,
+        body: markdownBody, // 存储正文供详情页使用
+        tags: Array.isArray(data.tags) ? data.tags : []
+    };
 }
 
-async function loadProducts() {
-  try {
-    const res = await fetch(`${DATA_URL}?t=${Date.now()}`);
-    const data = await res.json();
-    products = data.products || data;
-    initPage();
-  } catch (e) {
-    console.error('加载失败:', e);
-  }
+// 3. 渲染产品卡片列表
+function renderProducts(products) {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+
+    grid.innerHTML = products.map((item, index) => `
+        <div class="product-card" onclick="openModal(${index})">
+            <div class="product-img-wrapper">
+                <img src="${item.image}" alt="${item.title}" loading="lazy">
+            </div>
+            <div class="product-info">
+                <span class="product-cat">${item.category || '未分类'}</span>
+                <h3 class="product-title">${item.title}</h3>
+                <div class="product-tags">
+                    ${item.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-function initPage() {
-  renderHeroGrid();
-  buildCategoryTabs(); 
-  renderGrid();
+// 4. 渲染分类导航栏（自动去重提取）
+function renderCategories() {
+    const tabs = document.getElementById('categoryTabs');
+    const categories = ['all', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
+    
+    tabs.innerHTML = categories.map(cat => `
+        <button class="tab ${cat === 'all' ? 'active' : ''}" data-cat="${cat}">
+            ${cat === 'all' ? '全部' : cat}
+        </button>
+    `).join('');
 
-  const tabsContainer = document.querySelector('.tabs-scroll');
-  if (tabsContainer) {
-    tabsContainer.addEventListener('click', e => {
-      const btn = e.target.closest('.tab');
-      if (!btn) return;
-      activeCategory = btn.dataset.cat;
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderGrid();
+    // 绑定分类点击事件
+    tabs.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabs.querySelector('.tab.active').classList.remove('active');
+            btn.classList.add('active');
+            const cat = btn.dataset.cat;
+            const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat);
+            renderProducts(filtered);
+        });
     });
-  }
-
-  const modalClose = document.getElementById('modalClose');
-  const backdrop = document.getElementById('modalBackdrop');
-  if (modalClose) modalClose.addEventListener('click', closeModal);
-  if (backdrop) {
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
-  }
 }
 
-function renderHeroGrid() {
-  const grid = document.getElementById('heroGrid');
-  if (!grid || !products.length) return;
-  const lang = getCurrentLang();
-  const items = products.slice(0, 4);
-  grid.innerHTML = items.map(p => `
-    <div class="hero-thumb" onclick="openModal('${p.id}')" style="cursor:pointer; overflow:hidden; background:#eee;">
-      ${p.image ? `<img src="${getSafeImgSrc(p.image)}" style="width:100%;height:100%;object-fit:cover;" />` : `<span style="font-size:32px;">${p.emoji || ''}</span>`}
-    </div>
-  `).join('');
+// 5. 搜索功能逻辑
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allProducts.filter(p => 
+            p.title.toLowerCase().includes(term) || 
+            p.description?.toLowerCase().includes(term) ||
+            p.tags.some(t => t.toLowerCase().includes(term)) ||
+            p.brand?.toLowerCase().includes(term)
+        );
+        renderProducts(filtered);
+    });
 }
 
-function buildCategoryTabs() {
-  const container = document.querySelector('.tabs-scroll');
-  if (!container || !products.length) return;
-  const cats = [...new Set(products.map(p => p.category))].filter(Boolean);
-  const existingTabs = container.querySelectorAll('.tab:not([data-cat="all"])');
-  existingTabs.forEach(t => t.remove());
-  cats.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'tab';
-    btn.dataset.cat = cat;
-    btn.textContent = cat;
-    container.appendChild(btn);
-  });
-}
+// 6. 打开详情页（弹窗）
+window.openModal = function(index) {
+    const item = allProducts[index];
+    const modal = document.getElementById('productModal');
+    const backdrop = document.getElementById('modalBackdrop');
 
-function renderGrid() {
-  const grid = document.getElementById('productGrid');
-  if (!grid) return;
-  const lang = getCurrentLang();
-  const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
+    document.getElementById('modalTitle').innerText = item.title;
+    document.getElementById('modalCat').innerText = item.category || '未分类';
+    document.getElementById('modalImg').innerHTML = `<img src="${item.image}" style="width:100%">`;
+    
+    // 使用 marked 将正文 Markdown 转为 HTML
+    document.getElementById('modalBody').innerHTML = marked.parse(item.body || '');
+    
+    const buyBtn = document.getElementById('modalBuyBtn');
+    buyBtn.href = item.link_taobao || '#';
+    buyBtn.style.display = item.link_taobao ? 'block' : 'none';
 
-  grid.innerHTML = filtered.map(p => `
-    <article class="product-card" data-id="${p.id}" onclick="openModal('${p.id}')">
-      <div class="card-thumb" style="height:200px; overflow:hidden; background:#f4f4f4; display:flex; align-items:center; justify-content:center;">
-        ${p.image ? `<img src="${getSafeImgSrc(p.image)}" style="width:100%; height:100%; object-fit:cover;" />` : `<span style="font-size:48px;">${p.emoji || ''}</span>`}
-      </div>
-      <div class="card-body">
-        <span class="card-cat">${p.category || ''}</span>
-        <h3 class="card-title">${p.title[lang] || ''}</h3>
-        <p class="card-desc">${p.desc[lang] || ''}</p>
-        <span class="card-buy">查看详情 →</span>
-      </div>
-    </article>
-  `).join('');
-}
+    backdrop.hidden = false;
+    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+};
 
-function openModal(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  const lang = getCurrentLang();
-  document.getElementById('modalImg').innerHTML = `
-    ${p.image ? `<img src="${getSafeImgSrc(p.image)}" style="max-width:100%;" />` : `<span style="font-size:72px;">${p.emoji || ''}</span>`}
-  `;
-  document.getElementById('modalCat').textContent = p.category;
-  document.getElementById('modalTitle').textContent = p.title[lang];
-  document.getElementById('modalDesc').textContent = p.desc[lang];
-  document.getElementById('modalBuyBtn').href = p.link_taobao || '#';
-  document.getElementById('modalBackdrop').hidden = false;
-  document.body.style.overflow = 'hidden';
-}
+// 7. 关闭详情页
+document.getElementById('modalClose').onclick = closeModal;
+document.getElementById('modalBackdrop').onclick = (e) => {
+    if (e.target.id === 'modalBackdrop') closeModal();
+};
 
 function closeModal() {
-  document.getElementById('modalBackdrop').hidden = true;
-  document.body.style.overflow = '';
+    document.getElementById('modalBackdrop').hidden = true;
+    document.body.style.overflow = '';
 }
 
-function onLangChange() { renderHeroGrid(); renderGrid(); }
+// 8. 顶部 Hero 背景装饰图（随机选几张）
+function renderHeroGrid() {
+    const heroGrid = document.getElementById('heroGrid');
+    if (!heroGrid || allProducts.length === 0) return;
+    const images = allProducts.slice(0, 6).map(p => `<img src="${p.image}" alt="deco">`);
+    heroGrid.innerHTML = images.join('');
+}
 
-document.addEventListener('DOMContentLoaded', loadProducts);
+// 启动！
+document.addEventListener('DOMContentLoaded', init);
