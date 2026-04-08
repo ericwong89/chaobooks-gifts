@@ -4,60 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CHAOBOOKS GIFTS — 日本杂志赠品专门店</title>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <link rel="stylesheet" href="/chaobooks-gifts/assets/css/main.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+SC:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+  
   <style>
-    #section-email .formkit-form {
-      background: transparent !important;
-      box-shadow: none !important;
-      padding: 0 !important;
-      max-width: 380px;
-      margin: 0 auto;
+    /* 搜索框样式补丁 */
+    .search-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    .search-input { 
+      width: 100%; padding: 12px 20px; border: 1px solid #eee; 
+      border-radius: 30px; font-size: 14px; outline: none; transition: all 0.3s;
+      background: #f9f9f9;
     }
-    #section-email .formkit-form * { font-family: 'Noto Sans SC', sans-serif !important; }
-    #section-email .formkit-fields {
-      display: flex !important;
-      gap: 8px !important;
-      flex-direction: row !important;
-    }
-    #section-email .formkit-field { flex: 1 !important; margin: 0 !important; }
-    #section-email .formkit-input {
-      width: 100% !important;
-      padding: 10px 16px !important;
-      border: 0.5px solid #C5D4C6 !important;
-      border-radius: 2px !important;
-      background: #fff !important;
-      font-size: 13px !important;
-      color: #2A2A28 !important;
-      box-shadow: none !important;
-      outline: none !important;
-      height: auto !important;
-    }
-    #section-email .formkit-input:focus { border-color: #8A9E8C !important; }
-    #section-email .formkit-submit {
-      padding: 10px 22px !important;
-      background: #6B7F5E !important;
-      color: #fff !important;
-      border: none !important;
-      border-radius: 2px !important;
-      font-size: 12px !important;
-      letter-spacing: 2px !important;
-      cursor: pointer !important;
-      white-space: nowrap !important;
-      box-shadow: none !important;
-      height: auto !important;
-      width: auto !important;
-    }
-    #section-email .formkit-submit:hover { background: #556848 !important; }
-    #section-email .formkit-guarantee,
-    #section-email .formkit-powered-by-convertkit-container { display: none !important; }
-    #section-email [data-element="errors"] {
-      color: #8A9E8C !important;
-      font-size: 12px !important;
-      margin-top: 8px !important;
-    }
+    .search-input:focus { background: #fff; border-color: #6B7F5E; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    
+    /* 弹窗内容区样式 */
+    .modal-body { padding: 20px; line-height: 1.8; color: #444; font-size: 15px; }
+    .modal-body img { max-width: 100%; border-radius: 4px; margin: 10px 0; }
+    .modal-body h2 { font-size: 18px; margin-top: 20px; border-left: 3px solid #6B7F5E; padding-left: 10px; }
+    
+    /* 原有 FormKit 样式保留... */
+    #section-email .formkit-form { background: transparent !important; box-shadow: none !important; padding: 0 !important; max-width: 380px; margin: 0 auto; }
+    #section-email .formkit-fields { display: flex !important; gap: 8px !important; }
+    #section-email .formkit-input { width: 100% !important; padding: 10px 16px !important; border: 0.5px solid #C5D4C6 !important; border-radius: 2px !important; font-size: 13px !important; }
+    #section-email .formkit-submit { padding: 10px 22px !important; background: #6B7F5E !important; color: #fff !important; border: none !important; cursor: pointer !important; }
   </style>
 </head>
 <body>
@@ -91,11 +66,15 @@
     <div class="hero-grid" id="heroGrid"></div>
   </section>
 
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="输入关键词搜索，如：豹纹、帆布包、eclat..." />
+  </div>
+
   <section class="category-bar" id="section-gifts">
     <span class="bar-label" data-i18n="category_label">分类</span>
-    <div class="tabs-scroll">
+    <div class="tabs-scroll" id="categoryTabs">
       <button class="tab active" data-cat="all" data-i18n="all">全部</button>
-    </div>
+      </div>
   </section>
 
   <section class="gifts-section">
@@ -104,7 +83,6 @@
         <h2 class="section-title" data-i18n="latest">最新赠品</h2>
         <span class="section-title-en">Latest Gifts</span>
       </div>
-      <button class="view-all" data-i18n="view_all">查看全部</button>
     </div>
     <div class="product-grid" id="productGrid"></div>
   </section>
@@ -115,7 +93,7 @@
       <div class="about-body">
         <p class="section-label">About Us</p>
         <h3 class="about-title" data-i18n="about_title">关于 CHAOBOOKS</h3>
-        <p class="about-desc" data-i18n="about_desc">专注收录日本杂志随刊赠品资讯，提供简繁双语介绍与正品购买渠道。每期更新，帮你找到心仪的杂志赠品。</p>
+        <p class="about-desc" data-i18n="about_desc">专注收录日本杂志随刊赠品资讯，提供简繁双语介绍与正品购买渠道。</p>
       </div>
     </div>
   </section>
@@ -123,7 +101,6 @@
   <section class="email-section" id="section-email">
     <p class="section-label">Newsletter</p>
     <h3 class="email-title" data-i18n="email_title">订阅最新赠品资讯</h3>
-    <p class="email-desc" data-i18n="email_desc">每周发送最新日系杂志赠品情报，第一时间获取限量资讯。</p>
     <script async data-uid="06fd98a797" src="https://chaobooks.kit.com/06fd98a797/index.js"></script>
   </section>
 
@@ -131,29 +108,8 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <p class="footer-logo">CHAOBOOKS GIFTS</p>
-        <p class="footer-tagline" data-i18n="footer_tagline">日本杂志赠品专门店</p>
+        <p class="footer-tagline">日本杂志赠品专门店</p>
       </div>
-      <nav class="footer-links">
-        <a href="#section-about" data-i18n="nav_about">关于我们</a>
-        <a href="#section-email" data-i18n="footer_contact">联系方式</a>
-        <a href="#" data-i18n="footer_privacy">隐私政策</a>
-      </nav>
-      <p class="footer-copy">© 2025 CHAOBOOKS</p>
+      <p class="footer-copy">© 2026 CHAOBOOKS</p>
     </div>
   </footer>
-
-  <div class="modal-backdrop" id="modalBackdrop" hidden>
-    <div class="modal" id="productModal">
-      <button class="modal-close" id="modalClose" data-i18n="back">← 返回</button>
-      <div class="modal-img" id="modalImg"></div>
-      <span class="modal-cat" id="modalCat"></span>
-      <h2 class="modal-title" id="modalTitle"></h2>
-      <p class="modal-desc" id="modalDesc"></p>
-      <a class="btn-primary full" id="modalBuyBtn" target="_blank" rel="noopener" data-i18n="buy_btn">淘宝购买</a>
-    </div>
-  </div>
-
-  <script src="/chaobooks-gifts/assets/js/i18n.js"></script>
-  <script src="/chaobooks-gifts/assets/js/app.js"></script>
-</body>
-</html>
