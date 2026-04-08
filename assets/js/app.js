@@ -5,7 +5,7 @@
 
 const CONFIG = {
     repo: 'chaobooks-gifts',
-    user: 'hai-wong', // 请确认这是你的 GitHub 用户名
+    user: 'ericwong89', // 请确认这是你的 GitHub 用户名
     branch: 'main',
     contentDir: 'content'
 };
